@@ -16,7 +16,7 @@ async function receivedData(response, file, fileList) {
 
   console.log('upload success...')
   console.log(response, file, fileList)
-  fileobj = Object.assign(fileobj, { objectToLoad: response.files[0] })
+  fileobj = Object.assign(fileobj, { objectToLoad: response })
   let parseMp4BoxObj = await parseFile(fileobj)
 
   //设置MIME Codec
