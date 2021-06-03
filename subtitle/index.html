@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>subtitle</title>
+    <style>
+      .mp4box-container {
+        overflow: auto;
+        height: 100%;
+      }
+      .upload-demo {
+        width: 360px;
+      }
+      .mp4box-video-track {
+        height: 360px;
+        width: 640px;
+        background: #ddd;
+      }
+
+      video {
+        height: 316px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="file1" type="file" name="file1" onchange="handleOFileChange(this)" />
+
+    <div class="mp4box-video-track">
+      <h3>Video Track1</h3>
+      <video
+        id="video"
+        controls=""
+        autoplay
+        controls="controls"
+      >
+        <source
+          id="mp4"
+          src="https://wucheng666.github.io/MP4/coffee_subtitle.mp4"
+          type="video/mp4"
+        />
+        <track
+          src="./subtitle_en.vtt"
+          srclang="en"
+          label="English"
+          kind="subtitles"
+          default
+        />
+        <track
+          src="./subtitle_cn.srt"
+          srclang="zh-cn"
+          label="简体中文"
+          kind="subtitles"
+        />
+      </video>
+    </div>
+  </body>
+</html>
