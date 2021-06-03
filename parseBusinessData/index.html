@@ -67,7 +67,7 @@
       var xhr = new XMLHttpRequest()
       xhr.open('get', url)
       xhr.responseType = 'arraybuffer'
-      xhr.responseType = 'blob'
+//       xhr.responseType = 'blob'
       xhr.setRequestHeader('Range', 'bytes=' + start + '-' + end)
       xhr.onload = function() {
         console.log('fetched bytes: ', start, end)
