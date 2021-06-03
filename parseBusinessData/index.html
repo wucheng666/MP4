@@ -21,6 +21,7 @@
     var segmentDuration = 0
     var bytesFetched = 0
     var requestedSegments = []
+    var allBuffer = []
 
     for (var i = 0; i < totalSegments; ++i) requestedSegments[i] = false
 
@@ -65,12 +66,12 @@
     function fetchRange(url, start, end, cb) {
       var xhr = new XMLHttpRequest()
       xhr.open('get', url)
-      // xhr.responseType = 'arraybuffer'
-      // xhr.responseType = 'blob'
-      // xhr.setRequestHeader('Range', 'bytes=' + start + '-' + end)
+      xhr.responseType = 'arraybuffer'
+      xhr.responseType = 'blob'
+      xhr.setRequestHeader('Range', 'bytes=' + start + '-' + end)
       xhr.onload = function() {
         console.log('fetched bytes: ', start, end)
-        // bytesFetched += end - start + 1
+        bytesFetched += end - start + 1
         cb(xhr.response)
       }
       xhr.send()
@@ -78,14 +79,16 @@
 
     function appendSegment(blob) {
 
-      receivedData(blob)
-      // sourceBuffer.appendBuffer(chunk)
+//       receivedData(blob)
+      sourceBuffer.appendBuffer(chunk)
+      allBuffer.push(chunk)
     }
 
     function checkBuffer(_) {
       var currentSegment = getCurrentSegment()
       if (currentSegment === totalSegments && haveAllSegments()) {
         console.log('last segment', mediaSource.readyState)
+        console.log(allBuffer)
         mediaSource.endOfStream()
         video.removeEventListener('timeupdate', checkBuffer)
       } else if (shouldFetchNextSegment(currentSegment)) {
