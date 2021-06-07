@@ -13,8 +13,8 @@ var mediaSource1 = null,
   hasRerequest = false,
   mp4FileLength = 0
 
- iSOFile = new window.parseISOFile( processParsedDataCallBack)
- initMSE()
+iSOFile = new window.parseISOFile(processParsedDataCallBack)
+initMSE()
 
 function appendFetchBuffer(buffer) {
   // let buffer = new Uint8Array(arrBuf).buffer
@@ -24,24 +24,22 @@ function appendFetchBuffer(buffer) {
 
 function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
   if (0 === error.errorCode) {
-    if(error.nextRangeStart > mp4FileLength){
+    if (error.nextRangeStart > mp4FileLength) {
       return
     }
 
     //长度不够了，需要重新请求数据
     hasRerequest = true
     let rangeEnd = 0
-    if(error.currentMoofMdatLength > rangeLength){
+    if (error.currentMoofMdatLength > rangeLength) {
       rangeEnd = error.nextRangeStart + error.currentMoofMdatLength
     } else {
-      rangeEnd = error.nextRangeStart + rangeLength <= mp4FileLength ? error.nextRangeStart + rangeLength : mp4FileLength
+      rangeEnd =
+        error.nextRangeStart + rangeLength <= mp4FileLength
+          ? error.nextRangeStart + rangeLength
+          : mp4FileLength
     }
-    fetchRange(
-      assetURL,
-      error.nextRangeStart,
-      rangeEnd,
-      appendFetchBuffer
-    )
+    fetchRange(assetURL, error.nextRangeStart, rangeEnd, appendFetchBuffer)
   }
   if ('moov' === boxInfo.type) {
     //解析自定义数据
@@ -92,9 +90,7 @@ function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
     if (1 === boxInfo.trackId || 2 === boxInfo.trackId) {
       if (hasRerequest) {
         //重新请求后，不会在触发updateend，需要主动提交一次
-        videoBuffer1.appendBuffer(
-          arrayBuffer.slice(boxInfo.start, boxInfo.start + boxInfo.size)
-        )
+        videoBuffer1.appendBuffer(arrayBuffer.slice(boxInfo.start, boxInfo.start + boxInfo.size))
         hasRerequest = false
       } else {
         track1Buffer.push(arrayBuffer.slice(boxInfo.start, boxInfo.start + boxInfo.size))
@@ -104,9 +100,7 @@ function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
     if (3 === boxInfo.trackId || 2 === boxInfo.trackId) {
       if (hasRerequest) {
         //重新请求后，不会在触发updateend，需要主动提交一次
-        videoBuffer2.appendBuffer(
-          arrayBuffer.slice(boxInfo.start, boxInfo.start + boxInfo.size)
-        )
+        videoBuffer2.appendBuffer(arrayBuffer.slice(boxInfo.start, boxInfo.start + boxInfo.size))
         hasRerequest = false
       } else {
         track2Buffer.push(arrayBuffer.slice(boxInfo.start, boxInfo.start + boxInfo.size))
@@ -176,12 +170,13 @@ function onSourceOpen() {
 
     videoBuffer1.addEventListener('update', () => {})
     videoBuffer1.addEventListener('updateend', () => {
-      if (track1Buffer.length > 0 && !track1Buffer.updating) {
+      if (track1Buffer.length > 0 && !videoBuffer1.updating) {
         videoBuffer1.appendBuffer(track1Buffer.shift())
       }
     })
 
     video.addEventListener('seeking', seet1)
+    video.addEventListener('timeupdate', checkVideoBuffer)
 
     video.addEventListener('canplay', function() {
       // segmentDuration = video.duration / totalSegments
@@ -199,11 +194,21 @@ function onSourceOpen2() {
   })
 
   videoBuffer2.addEventListener('updateend', () => {
-    if (track2Buffer.length > 0 && !track2Buffer.updating) {
+    if (track2Buffer.length > 0 && !videoBuffer2.updating) {
       videoBuffer2.appendBuffer(track2Buffer.shift())
     }
   })
+  video.addEventListener('timeupdate', checkVideoBuffer)
   video.addEventListener('canplay', function() {
     video.play()
   })
+}
+
+function checkVideoBuffer() {
+  if (!videoBuffer1.updating && track1Buffer.length > 0) {
+    videoBuffer1.appendBuffer(track1Buffer.shift())
+  }
+  if (!videoBuffer2.updating && track2Buffer.length > 0) {
+    videoBuffer2.appendBuffer(track2Buffer.shift())
+  }
 }
