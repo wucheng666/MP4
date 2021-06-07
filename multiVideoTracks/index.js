@@ -27,13 +27,21 @@ function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
     if(error.nextRangeStart > mp4FileLength){
       return
     }
+
     //长度不够了，需要重新请求数据
     hasRerequest = true
-    let rangeEnd =
-      error.nextRangeStart + rangeLength <= mp4FileLength
-        ? error.nextRangeStart + rangeLength
-        : mp4FileLength
-    fetchRange(assetURL, error.nextRangeStart, rangeEnd, appendFetchBuffer)
+    let rangeEnd = 0
+    if(error.currentMoofMdatLength > mp4FileLength){
+      rangeEnd = error.nextRangeStart + error.currentMoofMdatLength
+    } else {
+      rangeEnd = error.nextRangeStart + rangeLength <= mp4FileLength ? error.nextRangeStart + rangeLength : mp4FileLength
+    }
+    fetchRange(
+      assetURL,
+      error.nextRangeStart,
+      rangeEnd,
+      appendFetchBuffer
+    )
   }
   if ('moov' === boxInfo.type) {
     //解析自定义数据
