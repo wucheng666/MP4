@@ -155,7 +155,6 @@ function seet1() {
   }
 }
 function onSourceOpen() {
-  let _self = this
   let mediaSource = mediaSource1
   videoBuffer1 = mediaSource.addSourceBuffer(mimeCodec1)
   let video = document.querySelector('video#mp4boxVideo1')
@@ -166,8 +165,8 @@ function onSourceOpen() {
 
     videoBuffer1.addEventListener('update', () => {})
     videoBuffer1.addEventListener('updateend', () => {
-      if (_self.track1Buffer.length > 0 && !_self.track1Buffer.updating) {
-        _self.videoBuffer1.appendBuffer(_self.track1Buffer.shift())
+      if (track1Buffer.length > 0 && !track1Buffer.updating) {
+        videoBuffer1.appendBuffer(track1Buffer.shift())
       }
     })
 
@@ -180,7 +179,6 @@ function onSourceOpen() {
   })
 }
 function onSourceOpen2() {
-  let _self = this
   let mediaSource = mediaSource2
   videoBuffer2 = mediaSource.addSourceBuffer(mimeCodec2)
   let video = document.querySelector('video#mp4boxVideo2')
@@ -190,8 +188,8 @@ function onSourceOpen2() {
   })
 
   videoBuffer2.addEventListener('updateend', () => {
-    if (_self.track2Buffer.length > 0 && !_self.track2Buffer.updating) {
-      _self.videoBuffer2.appendBuffer(_self.track2Buffer.shift())
+    if (track2Buffer.length > 0 && !track2Buffer.updating) {
+      videoBuffer2.appendBuffer(track2Buffer.shift())
     }
   })
   video.addEventListener('canplay', function() {
