@@ -18,7 +18,7 @@
       var business = document.querySelector('#business')
       var assetURL = 'https://wucheng666.github.io/MP4/parseBusinessData/setJsonOutFrag.mp4'
 
-      var iSOFile = new ISOFile(processParsedDataCallBack)
+      var iSOFile = ISOFile(processParsedDataCallBack)
 
       function fetchRange(url, start, end, cb) {
         var xhr = new XMLHttpRequest()
