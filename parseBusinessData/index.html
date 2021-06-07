@@ -18,7 +18,7 @@
       var business = document.querySelector('#business')
       var assetURL = 'https://wucheng666.github.io/MP4/parseBusinessData/setJsonOutFrag.mp4'
 
-      var iSOFile = ISOFile(processParsedDataCallBack)
+      var iSOFile = parseISOFile(processParsedDataCallBack)
 
       function fetchRange(url, start, end, cb) {
         var xhr = new XMLHttpRequest()
@@ -32,6 +32,7 @@
         xhr.send()
       }
 
+      //这里只请求一次，默认已知2M数据会含有完整的moov信息，如果没有得到完整的数据，则还是要继续请求数据的（这里没有考虑这些）
       fetchRange(assetURL, 0, 2 * 1024 * 1024, fetchCallBack)
 
       function fetchCallBack(buffer) {
