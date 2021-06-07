@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>multi video track</title>
+    <script src="./parseISOFile.js"></script>
+    <style>
+
+      .mp4box-container {
+        overflow: auto;
+        height: 100%;
+      }
+      .upload-demo {
+        width: 360px;
+      }
+      .mp4box-video-track {
+        height: 360px;
+        width: 640px;
+        background: #ddd;
+      }
+
+      video {
+        height: 316px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mp4box-video-track">
+      <h3>Video Track1</h3>
+      <video id="mp4boxVideo1" class="video-class" controls></video>
+    </div>
+    <div class="mp4box-video-track">
+      <h3>Video Track2</h3>
+      <video id="mp4boxVideo2" class="video-class" muted controls></video>
+    </div>
+  </body>
+  <script src="./index.js"></script>
+</html>
