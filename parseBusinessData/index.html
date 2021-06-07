@@ -60,7 +60,7 @@
                 .apply(null, boxInfo.box.traks[0].meta['xml '].data)
                 .replaceAll('\u0000', '')
             )
-            business.innerHTML = businessData
+            business.innerHTML = JSON.stringify(businessData) 
             console.log('====businessData:', businessData)
           }
         }
