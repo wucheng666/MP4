@@ -24,7 +24,7 @@ function appendFetchBuffer(buffer) {
 
 function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
   if (0 === error.errorCode) {
-    if(error.nextRangeStart > this.mp4FileLength){
+    if(error.nextRangeStart > mp4FileLength){
       return
     }
     //长度不够了，需要重新请求数据
