@@ -8,7 +8,7 @@ var mediaSource1 = null,
   track2Buffer = [],
   iSOFile = null,
   assetURL = './multiVideoFrag.mp4',
-  rangeLength = 5 * 1024 * 1024,
+  rangeLength = 2 * 1024 * 1024,
   // mp4FullBuffer:
   hasRerequest = false,
   mp4FileLength = 0
