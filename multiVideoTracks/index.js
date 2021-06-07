@@ -31,7 +31,7 @@ function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
     //长度不够了，需要重新请求数据
     hasRerequest = true
     let rangeEnd = 0
-    if(error.currentMoofMdatLength > mp4FileLength){
+    if(error.currentMoofMdatLength > rangeLength){
       rangeEnd = error.nextRangeStart + error.currentMoofMdatLength
     } else {
       rangeEnd = error.nextRangeStart + rangeLength <= mp4FileLength ? error.nextRangeStart + rangeLength : mp4FileLength
