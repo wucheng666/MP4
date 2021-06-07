@@ -129,8 +129,7 @@ function initMSE() {
     return
   }
 }
-function 
-(url, cb) {
+function getFileLength(url, cb) {
   var xhr = new XMLHttpRequest()
   xhr.open('head', url)
   xhr.onload = function() {
