@@ -4,6 +4,12 @@
     <meta charset="utf-8" />
 
     <script src="./parseISOFile.js"></script>
+    <style>
+      video {
+        height: 360px;
+        width: 640px;
+      }
+    </style>
   </head>
   <body>
     <video controls></video>
@@ -18,7 +24,7 @@
       var business = document.querySelector('#business')
       var assetURL = 'https://wucheng666.github.io/MP4/parseBusinessData/setJsonOutFrag.mp4'
 
-      var iSOFile = parseISOFile(processParsedDataCallBack)
+      var iSOFile = new window.parseISOFile(processParsedDataCallBack)
 
       function fetchRange(url, start, end, cb) {
         var xhr = new XMLHttpRequest()
