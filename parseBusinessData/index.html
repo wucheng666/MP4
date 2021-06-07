@@ -3,142 +3,56 @@
   <head>
     <meta charset="utf-8" />
 
-    <script src="./mp4box.simple.min.js"></script>
-    <script src="./mp4box.all.min.js"></script>
-    <style>
-
-      .video-track {
-        height: 360px;
-        width: 640px;
-        background: #ddd;
-      }
-      video{
-        height:100%;
-        width:100%;
-      }
-    </style>
+    <script src="./parseISOFile.js"></script>
   </head>
   <body>
-    <div class="video-track">
-      <video controls></video>
+    <video controls></video>
+    <div>
+      <h3>Business Data:</h3>
+      <span id="business"></span>
     </div>
   </body>
-  <script src="./index.js"></script>
   <script>
-    var video = document.querySelector('video')
+    window.onload = () => {
+      var video = document.querySelector('video')
+      var business = document.querySelector('#business')
+      var assetURL = 'https://wucheng666.github.io/MP4/parseBusinessData/setJsonOutFrag.mp4'
 
-    // var assetURL = './TestSetJsonOutFrag.mp4';
-    var assetURL = 'https://wucheng666.github.io/MP4/parseBusinessData/setJsonOutFrag.mp4'
-    var mimeCodec = 'video/mp4; codecs="avc1.640028,avc1.640029,mp4a.40.2"'
-    var totalSegments = 5
-    var segmentLength = 0
-    var segmentDuration = 0
-    var bytesFetched = 0
-    var requestedSegments = []
-    var allBuffer = []
-
-    for (var i = 0; i < totalSegments; ++i) requestedSegments[i] = false
-
-    var mediaSource = null
-    if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-      mediaSource = new MediaSource()
-      //console.log(mediaSource.readyState); // closed
-      video.src = URL.createObjectURL(mediaSource)
-      mediaSource.addEventListener('sourceopen', sourceOpen)
-    } else {
-      console.error('Unsupported MIME type or codec: ', mimeCodec)
-    }
-
-    var sourceBuffer = null
-    function sourceOpen(_) {
-      sourceBuffer = mediaSource.addSourceBuffer(mimeCodec)
-      getFileLength(assetURL, function(fileLength) {
-        console.log(fileLength, (fileLength / 1024 / 1024).toFixed(2), 'MB')
-        //totalLength = fileLength;
-        segmentLength = Math.round(fileLength / totalSegments)
-        //console.log(totalLength, segmentLength);
-        fetchRange(assetURL, 0, segmentLength, appendSegment)
-        requestedSegments[0] = true
-        video.addEventListener('timeupdate', checkBuffer)
-        video.addEventListener('canplay', function() {
-          segmentDuration = video.duration / totalSegments
-          video.play()
-        })
-        video.addEventListener('seeking', seek)
-      })
-    }
-
-    function getFileLength(url, cb) {
-      var xhr = new XMLHttpRequest()
-      xhr.open('head', url)
-      xhr.onload = function() {
-        cb(xhr.getResponseHeader('content-length'))
+      function fetchRange(url, start, end, cb) {
+        var xhr = new XMLHttpRequest()
+        xhr.open('get', url)
+        xhr.responseType = 'arraybuffer'
+        // xhr.responseType = 'blob'
+        xhr.setRequestHeader('Range', 'bytes=' + start + '-' + end)
+        xhr.onload = function() {
+          console.log('fetched bytes: ', start, end)
+          bytesFetched += end - start + 1
+          cb(xhr.response)
+        }
+        xhr.send()
       }
-      xhr.send()
-    }
 
-    function fetchRange(url, start, end, cb) {
-      var xhr = new XMLHttpRequest()
-      xhr.open('get', url)
-      xhr.responseType = 'arraybuffer'
-//       xhr.responseType = 'blob'
-      xhr.setRequestHeader('Range', 'bytes=' + start + '-' + end)
-      xhr.onload = function() {
-        console.log('fetched bytes: ', start, end)
-        bytesFetched += end - start + 1
-        cb(xhr.response)
+      fetchRange(assetURL, 0, 2 * 1024 * 1024, fetchCallBack)
+
+      function fetchCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
+        if ('moov' === boxInfo.type) {
+          //解析自定义数据
+          if (
+            boxInfo.box &&
+            boxInfo.box.traks[0] &&
+            boxInfo.box.traks[0].meta &&
+            boxInfo.box.traks[0].meta['xml ']
+          ) {
+            let businessData = JSON.parse(
+              String.fromCodePoint
+                .apply(null, boxInfo.box.traks[0].meta['xml '].data)
+                .replaceAll('\u0000', '')
+            )
+            business.innerHTML = businessData
+            console.log('====businessData:', businessData)
+          }
+        }
       }
-      xhr.send()
-    }
-
-    function appendSegment(chunk) {
-
-//       receivedData(blob)
-      sourceBuffer.appendBuffer(chunk)
-      allBuffer.push(chunk)
-    }
-
-    function checkBuffer(_) {
-      var currentSegment = getCurrentSegment()
-      if (currentSegment === totalSegments && haveAllSegments()) {
-        console.log('last segment', mediaSource.readyState)
-        console.log(allBuffer)
-        mediaSource.endOfStream()
-        video.removeEventListener('timeupdate', checkBuffer)
-      } else if (shouldFetchNextSegment(currentSegment)) {
-        requestedSegments[currentSegment] = true
-        console.log('time to fetch next chunk', video.currentTime)
-        fetchRange(assetURL, bytesFetched, bytesFetched + segmentLength, appendSegment)
-      }
-      //console.log(video.currentTime, currentSegment, segmentDuration);
-    }
-
-    function seek(e) {
-      console.log(e)
-      if (mediaSource.readyState === 'open') {
-        sourceBuffer.abort()
-        console.log(mediaSource.readyState)
-      } else {
-        console.log('seek but not open?')
-        console.log(mediaSource.readyState)
-      }
-    }
-
-    function getCurrentSegment() {
-      return ((video.currentTime / segmentDuration) | 0) + 1
-    }
-
-    function haveAllSegments() {
-      return requestedSegments.every(function(val) {
-        return !!val
-      })
-    }
-
-    function shouldFetchNextSegment(currentSegment) {
-      return (
-        video.currentTime > segmentDuration * currentSegment * 0.8 &&
-        !requestedSegments[currentSegment]
-      )
     }
   </script>
 </html>
