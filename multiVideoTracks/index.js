@@ -24,6 +24,9 @@ function appendFetchBuffer(buffer) {
 
 function processParsedDataCallBack({ boxInfo = {}, arrayBuffer, error = {} }) {
   if (0 === error.errorCode) {
+    if(error.nextRangeStart > this.mp4FileLength){
+      return
+    }
     //长度不够了，需要重新请求数据
     hasRerequest = true
     let rangeEnd =
@@ -126,7 +129,8 @@ function initMSE() {
     return
   }
 }
-function getFileLength(url, cb) {
+function 
+(url, cb) {
   var xhr = new XMLHttpRequest()
   xhr.open('head', url)
   xhr.onload = function() {
@@ -159,7 +163,7 @@ function onSourceOpen() {
   videoBuffer1 = mediaSource.addSourceBuffer(mimeCodec1)
   let video = document.querySelector('video#mp4boxVideo1')
   getFileLength(assetURL, fileLength => {
-    mp4FileLength = fileLength
+    mp4FileLength = Number(fileLength)
     console.log(fileLength, (fileLength / 1024 / 1024).toFixed(2), 'MB')
     fetchRange(assetURL, 0, rangeLength, appendFetchBuffer)
 
